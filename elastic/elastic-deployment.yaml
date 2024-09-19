@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+  namespace: bi-elk
+  labels:
+    app: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.1
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+        volumeMounts:
+        - name: elasticsearch-config
+          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          subPath: elasticsearch.yml
+        env:
+        - name: discovery.type
+          value: "single-node"  # Ensures Elasticsearch runs in single-node mode
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1"
+      volumes:
+      - name: elasticsearch-config
+        configMap:
+          name: elasticsearch-config
+
+---            
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-service
+  namespace: bi-elk
+  labels:
+    app: elasticsearch
+spec:
+  type: LoadBalancer  
+  ports:
+  - port: 9200
+    protocol: TCP
+    targetPort: 9200
+  selector:
+    app: elasticsearch
