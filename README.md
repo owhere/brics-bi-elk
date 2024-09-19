@@ -32,7 +32,7 @@ Before deploying the ELK stack, ensure that you have the following installed and
 
 3. Kibana: Accessible via an external IP (e.g., through a LoadBalancer service).
 
-## EKS nstallation
+## EKS Setup
 
 ### Provision the EKS Cluster
 The first step is to create the EKS cluster using the provided Terraform scripts.
@@ -149,7 +149,7 @@ kubectl cp tickets.json pvc-busybox:/mnt/logstash/tickets.json -n bi-elk
 ```
 After transfer, the data should be available for logstash pod at the /usr/share/logstash/tickets/
 
-### Troubleshotting 
+### Troubleshoting 
 
 1. Kibana/Elasticsearch connectivity: Ensure that Kibana and Elasticsearch are deployed in the same namespace and that there are no firewall or network issues between them.
 
@@ -160,7 +160,10 @@ After transfer, the data should be available for logstash pod at the /usr/share/
 4. If logstash pushes data correctly to ElasticSearch, the index should be built, but it does take a few minutes. 
 
 ## Roadmap
-- [ ] Try AWS Opensearch Service 
-- [ ] Using API from Zammad
-- [ ] Connecting Waldur API
+- [ ] Try AWS Opensearch Service
+- [ ] Access Control Management
+- [ ] Pipeline with Logstash
+- [ ] Connecting to Zammad API
+- [ ] Connecting to Waldur API
+- [ ] Dashboard Design
 - [ ] Explore more data resources
