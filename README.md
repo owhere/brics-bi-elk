@@ -149,7 +149,7 @@ kubectl cp tickets.json pvc-busybox:/mnt/logstash/tickets.json -n bi-elk
 ```
 After transfer, the data should be available for logstash pod at the /usr/share/logstash/tickets/
 
-### Troubleshoting 
+### Troubleshooting 
 
 1. Kibana/Elasticsearch connectivity: Ensure that Kibana and Elasticsearch are deployed in the same namespace and that there are no firewall or network issues between them.
 
@@ -161,7 +161,8 @@ After transfer, the data should be available for logstash pod at the /usr/share/
 
 ## Roadmap
 - [ ] Try AWS Opensearch Service
-- [ ] Access Control Management
+- [ ] Deploy Solution Accessment 
+- [ ] Security Control Managment
 - [ ] Pipeline with Logstash
 - [ ] Connecting to Zammad API
 - [ ] Connecting to Waldur API
