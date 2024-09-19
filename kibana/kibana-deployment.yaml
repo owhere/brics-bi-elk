@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: bi-elk
+  labels:
+    app: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:8.15.1
+        ports:
+        - containerPort: 5601
+        volumeMounts:
+        - name: kibana-config-volume
+          mountPath: /usr/share/kibana/config/kibana.yml
+          subPath: kibana.yml
+        env:
+        - name: ELASTICSEARCH_HOSTS
+          value: "http://10.100.99.249:9200" 
+      volumes:
+      - name: kibana-config-volume
+        configMap:
+          name: kibana-configmap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-service
+  namespace: bi-elk
+  labels:
+    app: kibana
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 5601
+    protocol: TCP
+    targetPort: 5601
+  selector:
+    app: kibana

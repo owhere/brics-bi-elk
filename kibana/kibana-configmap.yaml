@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-configmap
+  namespace: bi-elk
+data:
+  kibana.yml: |
+    server.name: kibana
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: ["http://10.100.99.249:9200"]
+
+    # Disable integrations-only mode
+    xpack.fleet.enabled: false
+    xpack.securitySolution.enabled: false
+
+    logging:
+      appenders:
+        file:
+          type: file
+          fileName: /usr/share/kibana/logs/kibana.log  
+          layout:
+            type: json
+      root:
+        appenders: [file]
+        level: debug  # for now
