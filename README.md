@@ -2,7 +2,7 @@
 
 This repository describes the deployment of the ELK Stack (Elasticsearch, Logstash, and Kibana) on an Amazon EKS (Elastic Kubernetes Service) cluster using Terraform and Kubernetes manifests. 
 
-Note: Another way to deploy ELK is use AWS Opensearch Service.
+Note: Another way to deploy ELK is to use AWS Opensearch Service.
 
 ## Prerequisites
 
@@ -63,7 +63,7 @@ Please create following if not exists
 |---------------------------|-----------------------------------------------------|----------------------|
 | **EKS Cluster**           | brics-bi-cluster-role                               | brics-bi-k8s         |
 | **Node Group IAM Role**   | brics_bi_node_group_role                            | brics-bi-workers     |
-| **EKS EBS CSI Driver**    | ricsbiEksEbsCsiDriverRole                           | attached volumes     |
+| **EKS EBS CSI Driver**    | bricsbiEksEbsCsiDriverRole                          | attached volumes     |
 
 
 ### VPC and Security Group
