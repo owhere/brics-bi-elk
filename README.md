@@ -32,7 +32,7 @@ Before deploying the ELK stack, ensure that you have the following installed and
 
 3. Kibana: Accessible via an external IP (e.g., through a LoadBalancer service).
 
-## Installation
+## EKS nstallation
 
 ### Provision the EKS Cluster
 The first step is to create the EKS cluster using the provided Terraform scripts.
@@ -48,7 +48,7 @@ Please create following if not exists
 3. IAM role for for EKS control plane operations
 4. KMS Key for volume data encryption
 
-## EKS k8s setup
+### EKS k8s Configuration
 
 ### Key Management Service (KMS)
 | **Attribute**             | **Details**                                         | **Used by**          |
@@ -91,13 +91,13 @@ Please create following if not exists
 | **Current Status**        | Cluster Accessible, ELK Deployed                    |
 
 
-### Configure kubectl for EKS
+### Access EKS
 
 ```
 aws eks --region <region> update-kubeconfig --name <cluster-name>
 ```
 
-### Deploy the ELK Stack
+## Deploy the ELK Stack
 After the cluster is ready, deploy the ELK stack using Kubernetes manifests, suggested order: Kibana, ElasticSearch and Logstash. Apply files in following directory.
 
 ```
@@ -113,7 +113,7 @@ Kibana can be accessed through the LoadBalancer’s external IP. Retrieve the IP
 kubectl get svc -n <namespace>
 ```
 
-## Configuration
+### Configuration
 
 To make ELK work, we need to configure them to make sure:
 
