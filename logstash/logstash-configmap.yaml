@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-configmap
+  namespace: bi-elk
+data:
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    xpack.monitoring.elasticsearch.hosts: [ "http://10.100.99.249:9200" ] 
+  logstash.conf: |
+    input {
+      file {
+        path => "/usr/share/logstash/tickets/tickets-*.json"
+        start_position => "beginning"
+        sincedb_path => "/dev/null"  # Store the state of the file
+        codec => multiline {
+          pattern => "^\["  # Start matching when the line starts with "["
+          negate => "true"
+          what => "previous"
+          max_lines => 1000 
+          auto_flush_interval => 2
+        }
+      }
+    }
+
+    filter {
+      json {
+        source => "message"
+        target => "parsed"  # Put parsed JSON into "parsed" field
+      }
+
+      split {
+        field => "[parsed]"  # Split JSON array into individual objects
+      }
+
+      mutate {
+        rename => { "[parsed][id]" => "ticket_id" }  # Example renaming
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["http://10.100.99.249:9200"]
+        index => "zammad-tickets-%{+YYYY.MM.dd}"
+        user => "${ES_USERNAME}"
+        password => "${ES_PASSWORD}"
+      }
+      stdout { codec => rubydebug }
+    }
+
+

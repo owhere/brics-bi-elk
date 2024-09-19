@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: bi-elk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash  # Selector should match the labels below
+  template:
+    metadata:
+      labels:
+        app: logstash  # Labels should match the selector
+    spec:
+      containers:
+      - name: logstash
+        image: docker.elastic.co/logstash/logstash:8.9.0
+        env:
+        - name: ES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: elastic-credentials
+              key: username
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elastic-credentials
+              key: password
+        volumeMounts:
+        - name: logstash-pipeline  # Mount for logstash.conf (pipeline config)
+          mountPath: /usr/share/logstash/pipeline/logstash.conf
+          subPath: logstash.conf
+        - name: logstash-config  # Mount for logstash.yml (main Logstash config)
+          mountPath: /usr/share/logstash/config/logstash.yml
+          subPath: logstash.yml
+        - name: logstash-storage  # Mount the PVC for storing tickets.json
+          mountPath: /usr/share/logstash/tickets  # Directory inside container
+      volumes:
+      - name: logstash-pipeline
+        configMap:
+          name: logstash-configmap
+      - name: logstash-config  # ConfigMap for logstash.yml
+        configMap:
+          name: logstash-configmap
+      - name: logstash-storage  # PVC reference for persistent storage
+        persistentVolumeClaim:
+          claimName: logstash-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash-service
+  namespace: bi-elk
+  labels:
+    app: logstash
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5044
+    targetPort: 5044
+    protocol: TCP
+    name: beats
+  - port: 9600
+    targetPort: 9600
+    protocol: TCP
+    name: monitoring
+  selector:
+    app: logstash
