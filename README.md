@@ -37,16 +37,19 @@ Before deploying the ELK stack, ensure that you have the following installed and
 ### Provision the EKS Cluster
 The first step is to create the EKS cluster using the provided Terraform scripts.
 
-```
-cd terraform
-terraform init
-terraform apply XXX.yaml
-```
 Please create following if not exists
 1. VPC (Virtual Private Cloud) and Subnets
 2. Security group
-3. IAM role for for EKS control plane operations
-4. KMS Key for volume data encryption
+3. IAM roles for for EKS control plane operations
+4. KMS keys for volume data encryption
+5. EKS Cluster
+
+```
+cd terraform
+terraform init
+terraform plan -var-file="terraform.tfvars"
+terraform apply -var-file="terraform.tfvars"
+```
 
 ### EKS k8s Configuration
 
@@ -55,7 +58,7 @@ Please create following if not exists
 |---------------------------|-----------------------------------------------------|----------------------|
 | **S3 Access**             | brics-bi-s3-key                                     |                      |
 | **EBS Encryption**        | brics-bi-k8s-ebs-key                                | attached volumes     |
-| **ETCD Encryptioin**      | brics-bi-etcd-key                                   | brics-bi-k8s         |
+| **ETCD Encryption**       | brics-bi-etcd-key                                   | brics-bi-k8s         |
 
 
 ### Identity and Access Management (IAM)
