@@ -171,3 +171,56 @@ After transfer, the data should be available for logstash pod at the /usr/share/
 - [ ] Connecting to Waldur API
 - [ ] Dashboard Design
 - [ ] Explore Other Data Sources
+
+
+# Amazon OpenSearch Service
+This section is to use AWS OpenSearch Service (formerly known as Amazon Elasticsearch Service) for an ELK (Elasticsearch, Logstash, and Kibana) setup.
+
+## Prerequisites
+
+Create an IAM role and its policies for the domain.
+
+## Create a Domain 
+
+## Create an Index (use opensearch.py)
+
+```
+cd scripts
+cp example.env .env
+```
+
+Set credentials variables in .env file, and then set up python env to run
+
+```
+cd scripts
+python3 -m venv env
+source env/bin/activate
+pip3 install -r requirements.txt
+python3 opensearch.py create-index --index zammad-dev-tickets
+```
+
+Then check if index is created via cmd or AWS OpenSearch portal
+
+```
+curl https://<your-opensearch-domain>/_cat/indices?v 
+```
+
+### Download data from a data source (e.g. zammad, use zammad.py)
+```
+cd scripts
+source env/bin/activate
+python3 zammad.py get-tickets --output ../data/zammad-dev.json
+```
+
+### Upload Data to an Index (use opensearch.py)
+```
+cd scripts
+source env/bin/activate
+python3 zammad.py get-tickets --output ../data/zammad-dev.json
+python3 opensearch.py upload-file --index zammad-dev-tickets --file ../data/zammad-dev.json
+```
+
+### Check index documents
+```
+curl https://<your-opensearch-domain>/zammad-dev-tickets/_search
+```
