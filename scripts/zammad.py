@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 import argparse
 import json
@@ -19,37 +20,50 @@ print(f"Zammad API Token (First 6 characters for security): {ZAMMAD_API_TOKEN[:6
 def get_tickets(output_file):
     url = f"{ZAMMAD_API_URL}/tickets"
     
-    # Debugging: Print the full request URL to ensure it's constructed properly
-    print(f"Request URL: {url}")
-
     headers = {
         "Authorization": f"Token token={ZAMMAD_API_TOKEN}",
         "Content-Type": "application/json"
     }
 
-    # Debugging: Print headers to ensure token is being passed correctly
-    print(f"Request Headers: {headers}")
+    all_tickets = []
+    page = 1
+    per_page = 100 
+    has_more_pages = True
 
-    try:
-        response = requests.get(url, headers=headers)
+    while has_more_pages:
+        try:
+            # Fetch a single page of tickets
+            response = requests.get(f"{url}?page={page}&per_page={per_page}", headers=headers)
 
-        # Debugging: Print the response status code and content for further insight
-        print(f"Response Status Code: {response.status_code}")
-        print(f"Response Text: {response.text[:200]}...")  # Truncate for readability
+            if response.status_code == 200:
+                tickets = response.json()
+                
+                # If there are no tickets, break the loop
+                if not tickets:
+                    has_more_pages = False
+                    break
 
-        if response.status_code == 200:
-            tickets = response.json()
-            print(f"Successfully retrieved {len(tickets)} tickets.")
+                all_tickets.extend(tickets)  # Add current page's tickets to the list
+                
+                print(f"Page {page}: Retrieved {len(tickets)} tickets. Total so far: {len(all_tickets)}")
 
-            # Save tickets to JSON file
-            with open(output_file, 'w') as file:
-                json.dump(tickets, file, indent=4)
-            print(f"Tickets saved to {output_file}")
-        else:
-            print(f"Error: {response.status_code} - {response.text}")
+                # Increment the page number to get the next set of tickets
+                page += 1
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
+                # Optional: Delay to prevent overwhelming the server (if needed)
+                time.sleep(1)
+            else:
+                print(f"Error: {response.status_code} - {response.text}")
+                has_more_pages = False
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            break
+
+    # Save all tickets to JSON file
+    with open(output_file, 'w') as file:
+        json.dump(all_tickets, file, indent=4)
+    print(f"Total tickets saved to {output_file}: {len(all_tickets)}")
 
 # Main function to handle command pattern
 def main():
