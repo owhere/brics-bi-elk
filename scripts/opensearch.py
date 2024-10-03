@@ -1,6 +1,7 @@
 import os
 import boto3
 import requests
+import pandas as pd
 from requests_aws4auth import AWS4Auth
 from dotenv import load_dotenv
 import argparse
@@ -88,12 +89,28 @@ def upload_file_to_index(index_name, file_path):
     print(f"Response Code: {response.status_code}")
     print(response.text)
 
+def csv_to_json(csv_file, json_file):
+    # Read CSV file
+    df = pd.read_csv(csv_file)
+
+    # Convert DataFrame to dictionary and then to JSON
+    records = df.to_dict(orient='records')
+
+    # Save JSON to a file
+    with open(json_file, 'w') as f:
+        json.dump(records, f, indent=4)
+    
+    print(f"CSV file '{csv_file}' successfully converted to JSON and saved to '{json_file}'")
+
 # Main function to handle commands
 def main():
     parser = argparse.ArgumentParser(description="Manage OpenSearch indices.")
-    parser.add_argument('command', choices=['create-index', 'upload-file'], help="Command to execute.")
-    parser.add_argument('--index', required=True, help="Name of the OpenSearch index.")
+    parser.add_argument('command', choices=['create-index', 'upload-file', 'csv-to-json'], help="Command to execute.")
+    parser.add_argument('--index', help="Name of the OpenSearch index.")
     parser.add_argument('--file', help="Path to the JSON file for uploading data (required for 'upload-file').")
+
+    parser.add_argument('--csv', help="Path to the input CSV file")
+    parser.add_argument('--json', help="Path to save the output JSON file")
 
     args = parser.parse_args()
 
@@ -104,6 +121,14 @@ def main():
             print("Error: --file argument is required for uploading data.")
             return
         upload_file_to_index(args.index, args.file)
+    elif args.command == 'csv-to-json':
+        if not args.csv:
+            print("Error: --csv argument is required for uploading data.")
+            return
+        if not args.json:
+            print("Error: --json argument is required for uploading data.")
+            return
+        csv_to_json(args.csv, args.json)
 
 if __name__ == "__main__":
     main()
