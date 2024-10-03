@@ -163,14 +163,14 @@ After transfer, the data should be available for logstash pod at the /usr/share/
 4. If logstash pushes data correctly to ElasticSearch, the index should be built, but it does take a few minutes. 
 
 ## Roadmap
-- [ ] Try AWS OpenSearch Service
+- [v] Try AWS OpenSearch Service
 - [ ] Deploy Solution Assessment 
 - [ ] Security Control Management
 - [ ] Pipeline with Logstash
-- [ ] Connecting to Zammad API
+- [v] Connecting to Zammad API
 - [ ] Connecting to Waldur API
 - [ ] Dashboard Design
-- [ ] Explore Other Data Sources
+- [v] Explore Other Data Sources
 
 
 # Amazon OpenSearch Service
@@ -212,13 +212,22 @@ source env/bin/activate
 python3 zammad.py get-tickets --output ../data/zammad-dev.json
 ```
 
-### Upload Data to an Index (use opensearch.py)
+### Upload a json file to an Index (use opensearch.py)
 ```
 cd scripts
 source env/bin/activate
 python3 zammad.py get-tickets --output ../data/zammad-dev.json
 python3 opensearch.py upload-file --index zammad-dev-tickets --file ../data/zammad-dev.json
 ```
+
+### Covert CSV to JSON (use opensearch.py)
+```
+cd scripts
+source env/bin/activate
+python3 opensearch.py csv-to-json --csv my-file.csv --json my-file.json
+```
+
+Then use upload-file command to update the json file to the index.
 
 ### Check index documents
 ```
