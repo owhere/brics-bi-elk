@@ -178,20 +178,79 @@ This section is to use AWS OpenSearch Service (formerly known as Amazon Elastics
 
 ## Prerequisites
 
-Create an IAM role and its policies for the domain.
+Create an IAM role and its policies for the domain as following:
+
+| **Attribute**             | **Details**                                         |
+|---------------------------|-----------------------------------------------------|
+| **User**                  | elastic-master-user                                 |
+| **Policies**              | AmazonESFullAccess, OpensearchAccess                |
+| **Console access**        | Disabled                                            |
+| **Access Key 1**          | Created                                             |
 
 ## Create a Domain 
 
+Follow this [link](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/gsgcreate-domain.html) to create OpenSearch Service domain
+
+
+## Set up OpensearchAccess Policy for IAM role
+
+Set up rule as following for IAM user:
+```json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"es:ESHttpGet",
+				"es:ESHttpPost",
+				"es:ESHttpPut",
+				"es:ESHttpDelete"
+			],
+			"Resource": "arn:aws:es:<Your-Region>:<Your-Account>:<Your-Domain>>*"
+		}
+	]
+}
+```
+
+## Use Kibana Signer Extension to Access Portal
+
+For IAM-based access to OpenSearch, we use IAM policies and AWS Signature Version 4 signing to authenticate requests made to the OpenSearch dashboard.
+
+1. Install the AWS Signer Browser extension for your browser (available for Chrome and Firefox).
+
+2. Open the extension settings and provide your AWS Access Key and Secret Key for the IAM user you are using to access OpenSearch.
+
+3. After configuring the credentials in the extension, try accessing the OpenSearch dashboard again. The extension will sign your requests automatically using AWS SigV4.
+
+| **Attribute**             | **Details**                                         |
+|---------------------------|-----------------------------------------------------|
+| **Key**                   | Your-IAM-User-Key                                   |
+| **Secret**                | Your-IAM-User-Secret                                |
+| **Host Patterns**         | https://your-Opensearch-domain.aws/*                |
+| **Defined Services**      | See below                                           |
+
+Set defined services:
+```json
+[
+    {
+        "region": "your-region",
+        "service": "es",
+        "host": "*"
+    }
+]
+```
+
 ## Create an Index (use opensearch.py)
 
-```
+```shell
 cd scripts
 cp example.env .env
 ```
 
 Set credentials variables in .env file, and then set up python env to run
 
-```
+```shell
 cd scripts
 python3 -m venv env
 source env/bin/activate
@@ -201,19 +260,19 @@ python3 opensearch.py create-index --index zammad-dev-tickets
 
 Then check if index is created via cmd or AWS OpenSearch portal
 
-```
+```shell
 curl https://<your-opensearch-domain>/_cat/indices?v 
 ```
 
 ### Download data from a data source (e.g. zammad, use zammad.py)
-```
+```shell
 cd scripts
 source env/bin/activate
 python3 zammad.py get-tickets --output ../data/zammad-dev.json
 ```
 
 ### Upload a json file to an Index (use opensearch.py)
-```
+```shell
 cd scripts
 source env/bin/activate
 python3 zammad.py get-tickets --output ../data/zammad-dev.json
@@ -221,7 +280,7 @@ python3 opensearch.py upload-file --index zammad-dev-tickets --file ../data/zamm
 ```
 
 ### Covert CSV to JSON (use opensearch.py)
-```
+```shell
 cd scripts
 source env/bin/activate
 python3 opensearch.py csv-to-json --csv my-file.csv --json my-file.json
@@ -230,6 +289,6 @@ python3 opensearch.py csv-to-json --csv my-file.csv --json my-file.json
 Then use upload-file command to update the json file to the index.
 
 ### Check index documents
-```
+```shell
 curl https://<your-opensearch-domain>/zammad-dev-tickets/_search
 ```
