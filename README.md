@@ -162,11 +162,13 @@ After transfer, the data should be available for logstash pod at the /usr/share/
 
 4. If logstash pushes data correctly to ElasticSearch, the index should be built, but it does take a few minutes. 
 
+### Dashboard demo (dev data)
+![dashboard example](images/elastic.png)
+
 ## Roadmap
 - [x] Try AWS OpenSearch Service
-- [ ] Deploy Solution Assessment 
+- [x] Deploy Solution Assessment 
 - [ ] Security Control Management
-- [ ] Pipeline with Logstash
 - [x] Connecting to Zammad API
 - [ ] Connecting to Waldur API
 - [ ] Dashboard Design
