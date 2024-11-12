@@ -102,10 +102,24 @@ def csv_to_json(csv_file, json_file):
     
     print(f"CSV file '{csv_file}' successfully converted to JSON and saved to '{json_file}'")
 
+def clear_index_data(index_name):
+    url = f"{opensearch_endpoint}/{index_name}/_delete_by_query"
+    headers = {"Content-Type": "application/json"}
+    data = '{"query": {"match_all": {}}}'  # Query to delete all documents
+
+    auth = get_aws_auth()
+    response = requests.post(url, auth=auth, headers=headers, data=data)
+
+    if response.status_code == 200:
+        print(f"Data in index '{index_name}' cleared successfully.")
+    else:
+        print(f"Failed to clear data in index '{index_name}'. Response Code: {response.status_code}")
+        print(response.text)
+
 # Main function to handle commands
 def main():
     parser = argparse.ArgumentParser(description="Manage OpenSearch indices.")
-    parser.add_argument('command', choices=['create-index', 'upload-file', 'csv-to-json'], help="Command to execute.")
+    parser.add_argument('command', choices=['create-index', 'upload-file', 'csv-to-json', 'clear-index'], help="Command to execute.")
     parser.add_argument('--index', help="Name of the OpenSearch index.")
     parser.add_argument('--file', help="Path to the JSON file for uploading data (required for 'upload-file').")
 
@@ -129,6 +143,11 @@ def main():
             print("Error: --json argument is required for uploading data.")
             return
         csv_to_json(args.csv, args.json)
+    elif args.command == 'clear-index':
+        if args.index:
+            clear_index_data(args.index)
+        else:
+            print("Please provide an index name using --index.")
 
 if __name__ == "__main__":
     main()

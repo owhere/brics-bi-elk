@@ -292,3 +292,9 @@ Then use upload-file command to update the json file to the index.
 ```shell
 curl https://<your-opensearch-domain>/zammad-dev-tickets/_search
 ```
+
+### Clear index data
+Sometime the index upload creats duplicates, you can clear the index before upload a new file.
+```shell
+python3 opensearch.py clear-index --index zammad-dev-tickets
+```
