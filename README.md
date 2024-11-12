@@ -165,10 +165,18 @@ After transfer, the data should be available for logstash pod at the /usr/share/
 ### Dashboard demo (dev data)
 ![dashboard example](images/elastic.png)
 
+### Clear up the cluster
+
+1. Delete PVCs and PVs
+2. Delete custom resources, namespaces and applications
+3. Remove managed node groups and add-ons
+4. Clean up networking components and any LoadBalancers
+5. Delete the EKS Cluster
+
 ## Roadmap
 - [x] Try AWS OpenSearch Service
 - [x] Deploy Solution Assessment 
-- [ ] Security Control Management
+- [x] Security Control Management
 - [x] Connecting to Zammad API
 - [ ] Connecting to Waldur API
 - [ ] Dashboard Design
