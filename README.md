@@ -40,15 +40,21 @@ The first step is to create the EKS cluster using the provided Terraform scripts
 Please create following if not exists
 1. VPC (Virtual Private Cloud) and Subnets
 2. Security group
-3. IAM roles for for EKS control plane operations
-4. KMS keys for volume data encryption
-5. EKS Cluster
+3. KMS keys for volume data encryption
 
-```
+
+```bash
 cd terraform
 terraform init
-terraform plan -var-file="terraform.tfvars"
-terraform apply -var-file="terraform.tfvars"
+terraform plan -var-file="terraform.tfvars --out planfile"
+terraform apply planfile
+```
+
+Note: if you have some resources already created, you can import before applying (for example):
+```bash
+terraform import aws_iam_role.brics_bi_cluster_role brics_bi_cluster_role
+terraform import aws_iam_role.bricsbi_eks_ebs_csi_driver_role bricsbiEksEbsCsiDriverRole
+terraform import aws_iam_role.brics_bi_node_group_role brics_bi_node_group_role
 ```
 
 ### EKS k8s Configuration
@@ -96,14 +102,14 @@ terraform apply -var-file="terraform.tfvars"
 
 ### Access EKS
 
-```
+```bash
 aws eks --region <region> update-kubeconfig --name <cluster-name>
 ```
 
 ## Deploy the ELK Stack
 After the cluster is ready, deploy the ELK stack using Kubernetes manifests, suggested order: Kibana, ElasticSearch and Logstash. Apply files in following directory.
 
-```
+```bash
 kubectl apply -f elk-k8s/kibana/
 kubectl apply -f elk-k8s/elasticsearch/
 kubectl apply -f elk-k8s/logstash/
@@ -112,7 +118,7 @@ kubectl apply -f elk-k8s/logstash/
 ### Access Kibana
 Kibana can be accessed through the LoadBalancer’s external IP. Retrieve the IP from following command.
 
-```
+```bash
 kubectl get svc -n <namespace>
 ```
 
@@ -127,7 +133,7 @@ To make ELK work, we need to configure them to make sure:
 ### Elasticsearch
 Configuration options (e.g., elasticsearch.yml) can be customized in the elasticsearch/ directory. So, prepare elasticsearch.yml and make sure it refers in the deployment, then redeploy.
 
-```
+```bash
 kubectl apply -f elk-k8s/elasticsearch/
 ```
 
@@ -139,14 +145,14 @@ Logstash configuration (logstash.conf) is essential to get data collected. And i
 
 To have a customised configuration, apply configmap
 
-```
+```bash
 kubectl apply -f elk-k8s/elasticsearch/logstash-configmap.yaml
 kubectl apply -f elk-k8s/elasticsearch/logstash-deployment.yaml
 ```
 
 To easily transfer data from bastion to pod volume, use a pvc-busybox to do so.
 
-```
+```bash
 kubectl apply -f pvc-busybox.yaml
 kubectl cp tickets.json pvc-busybox:/mnt/logstash/tickets.json -n bi-elk
 ```

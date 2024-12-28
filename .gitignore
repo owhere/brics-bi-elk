@@ -1,6 +1,7 @@
 .terraform
-terraform/terraform.tfvars
-terraform/plan.*
+.terraform.*
+terraform/terraform.*
+terraform/plan*
 
 scripts/.env
 scripts/env

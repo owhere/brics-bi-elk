@@ -28,5 +28,5 @@ resource "aws_iam_role" "bricsbi_eks_ebs_csi_driver_role" {
 # Attach the required policies for the EBS CSI Driver
 resource "aws_iam_role_policy_attachment" "ebs_csi_driver_policy" {
   role       = aws_iam_role.bricsbi_eks_ebs_csi_driver_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }

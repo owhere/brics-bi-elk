@@ -24,12 +24,6 @@ resource "aws_eks_cluster" "brics_bi_k8s" {
     }
   }
 
-  oidc {
-    identity_provider {
-      issuer_url = var.oidc_issuer_url
-    }
-  }
-
   depends_on = [
     aws_iam_role.brics_bi_cluster_role
   ]

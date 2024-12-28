@@ -1,81 +1,85 @@
-# OIDC Variables
-
-variable "oidc_provider_arn" {
-  description = "The ARN of the OIDC provider for the EKS cluster."
+variable "aws_region" {
+  description = "AWS region for the EKS cluster"
   type        = string
 }
 
-variable "oidc_provider_aud" {
-  description = "Audience for the OIDC provider."
-  type        = string
-  default     = "sts.amazonaws.com"
-}
-
-variable "oidc_provider_sub" {
-  description = "Subject for the OIDC provider."
+variable "aws_profile" {
+  description = "AWS CLI profile name"
   type        = string
 }
-
-
-variable "oidc_issuer_url" {
-  description = "The URL of the OIDC issuer for the cluster."
-  type        = string
-}
-
-# Cluster Variables
 
 variable "cluster_name" {
-  description = "The name of the EKS cluster."
+  description = "EKS cluster name"
   type        = string
 }
 
 variable "cluster_role_arn" {
-  description = "The ARN of the IAM role for the EKS cluster."
+  description = "IAM role arn for the EKS cluster"
   type        = string
 }
 
 variable "cluster_version" {
-  description = "The Kubernetes version for the EKS cluster."
+  description = "EKS cluster version"
   type        = string
-  default     = "1.30"
+  default     = "1.26"
 }
 
-variable "enabled_cluster_log_types" {
-  description = "List of log types to enable for the cluster."
-  type        = list(string)
-}
-
-variable "kms_key_arn" {
-  description = "The ARN of the KMS key for encryption."
+variable "oidc_provider_arn" {
+  description = "OIDC Provider ARN"
   type        = string
 }
 
+variable "oidc_provider_aud" {
+  description = "OIDC audience claim for the EKS cluster"
+  type        = string
+  default     = "sts.amazonaws.com"
+}
 
-# Networking Variables
+variable "oidc_issuer_url" {
+  description = "OIDC audience claim for the EKS cluster"
+  type        = string 
+}
+
+variable "oidc_provider_sub" {
+  description = "OIDC Provider SUB"
+  type        = string
+}
 
 variable "subnet_ids" {
-  description = "A list of subnet IDs for the EKS cluster."
+  description = "List of subnet IDs for the EKS cluster"
   type        = list(string)
 }
 
 variable "security_group_ids" {
-  description = "A list of security group IDs for the EKS cluster."
+  description = "List of security group IDs for the EKS cluster"
   type        = list(string)
 }
 
 variable "endpoint_private_access" {
-  description = "Indicates whether private access to the cluster's Kubernetes API server is enabled."
-  type        = bool
-  default     = true
-}
-
-variable "endpoint_public_access" {
-  description = "Indicates whether public access to the cluster's Kubernetes API server is enabled."
+  description = "Enable private endpoint access for the EKS cluster"
   type        = bool
   default     = false
 }
 
+variable "endpoint_public_access" {
+  description = "Enable public endpoint access for the EKS cluster"
+  type        = bool
+  default     = true
+}
+
 variable "service_ipv4_cidr" {
-  description = "The CIDR block for the cluster's service IPs."
+  description = "CIDR block for Kubernetes services"
+  type        = string
+  default     = "10.100.0.0/16"
+}
+
+variable "enabled_cluster_log_types" {
+  description = "List of cluster log types to enable"
+  type        = list(string)
+  default     = ["api", "audit", "authenticator"]
+}
+
+variable "kms_key_arn" {
+  description = "KMS key ARN for encryption"
   type        = string
 }
