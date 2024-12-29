@@ -46,7 +46,7 @@ Please create following if not exists
 ```bash
 cd terraform
 terraform init
-terraform plan -var-file="terraform.tfvars --out planfile"
+terraform plan -var-file="terraform.tfvars" --out planfile
 terraform apply planfile
 ```
 
@@ -110,6 +110,7 @@ aws eks --region <region> update-kubeconfig --name <cluster-name>
 After the cluster is ready, deploy the ELK stack using Kubernetes manifests, suggested order: Kibana, ElasticSearch and Logstash. Apply files in following directory.
 
 ```bash
+kubectl create namespace bi-elk
 kubectl apply -f elk-k8s/kibana/
 kubectl apply -f elk-k8s/elasticsearch/
 kubectl apply -f elk-k8s/logstash/
@@ -134,7 +135,7 @@ To make ELK work, we need to configure them to make sure:
 Configuration options (e.g., elasticsearch.yml) can be customized in the elasticsearch/ directory. So, prepare elasticsearch.yml and make sure it refers in the deployment, then redeploy.
 
 ```bash
-kubectl apply -f elk-k8s/elasticsearch/
+kubectl apply -f elk-k8s/elastic/
 ```
 
 ### Kibana 

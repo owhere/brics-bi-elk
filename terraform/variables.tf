@@ -24,26 +24,30 @@ variable "cluster_version" {
   default     = "1.26"
 }
 
+# The full ARN for the OIDC provider
 variable "oidc_provider_arn" {
-  description = "OIDC Provider ARN"
   type        = string
+  description = "ARN of the IAM OIDC provider, e.g. arn:aws:iam::123456789012:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/<OIDC_ID>"
 }
 
-variable "oidc_provider_aud" {
-  description = "OIDC audience claim for the EKS cluster"
+# Only the domain path, without https:// and without arn:aws:iam::
+# e.g. oidc.eks.eu-west-2.amazonaws.com/id/<OIDC_ID>
+variable "oidc_provider_url" {
   type        = string
-  default     = "sts.amazonaws.com"
-}
-
-variable "oidc_issuer_url" {
-  description = "OIDC audience claim for the EKS cluster"
-  type        = string 
+  description = "EKS OIDC domain path for Condition keys"
 }
 
 variable "oidc_provider_sub" {
-  description = "OIDC Provider SUB"
   type        = string
+  description = "Subject claim, e.g. system:serviceaccount:kube-system:ebs-csi-controller-sa"
 }
+
+variable "oidc_provider_aud" {
+  type        = string
+  default     = "sts.amazonaws.com"
+  description = "Typical EKS IRSA audience value"
+}
+
 
 variable "subnet_ids" {
   description = "List of subnet IDs for the EKS cluster"
